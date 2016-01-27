@@ -309,6 +309,7 @@
 		B7CBFB1F1B769D1700CDE475 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0640;
 				TargetAttributes = {
 					B77E397B1B778E880078ABA3 = {
@@ -714,6 +715,7 @@
 				B77E399A1B778E880078ABA3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B77E399B1B778E880078ABA3 /* Build configuration list for PBXNativeTarget "ExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -722,6 +724,7 @@
 				B77E399D1B778E880078ABA3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B7CBFB221B769D1700CDE475 /* Build configuration list for PBXProject "EGFloatingTextField" */ = {
 			isa = XCConfigurationList;

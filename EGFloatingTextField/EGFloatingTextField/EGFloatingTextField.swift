@@ -15,6 +15,7 @@ public enum EGFloatingTextFieldValidationType {
 }
 
 @IBDesignable
+
 public class EGFloatingTextField: UITextField {
     
     private typealias EGFloatingTextFieldValidationBlock = ((text:String,inout message:String)-> Bool)!
@@ -99,7 +100,7 @@ public class EGFloatingTextField: UITextField {
         })
         self.floating = false
         self.hasError = false
-        self.textColor = UIColor.whiteColor()
+        
         self.labelTextColor = kDefaultLabelTextColor
         self.label = UILabel(frame: CGRectZero)
         self.label.font = self.labelFont
@@ -111,8 +112,8 @@ public class EGFloatingTextField: UITextField {
         
         
         self.activeBorder = UIView(frame: CGRectZero)
-        self.activeBorder.backgroundColor = UIColor.whiteColor()
-        self.activeBorder.layer.opacity = 0.5
+        self.activeBorder.backgroundColor = kDefaultActiveColor
+        self.activeBorder.layer.opacity = 0
         self.addSubview(self.activeBorder)
         
         self.label.autoAlignAxis(ALAxis.Horizontal, toSameAxisOfView: self)
@@ -204,6 +205,16 @@ public class EGFloatingTextField: UITextField {
         self.validate()
     }
     
+    public func setDefaultText(string: String){
+        text = string
+        floatLabelToTop()
+        floating = true
+        showInactiveBorder()
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            self.label.textColor = self.kDefaultInactiveColor
+        }
+    }
+    
     func floatLabelToTop() {
         
         CATransaction.begin()
@@ -274,11 +285,11 @@ public class EGFloatingTextField: UITextField {
         
         CATransaction.begin()
         CATransaction.setCompletionBlock { () -> Void in
-            self.activeBorder.layer.opacity = 0.5
+            self.activeBorder.layer.opacity = 0
         }
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(1.0, 1.0, 1)
-        let toTransform = CATransform3DMakeScale(1.0, 1.0, 1)
+        let toTransform = CATransform3DMakeScale(0.01, 1.0, 1)
         anim2.fromValue = NSValue(CATransform3D: fromTransform)
         anim2.toValue = NSValue(CATransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
