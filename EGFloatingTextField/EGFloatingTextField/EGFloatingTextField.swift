@@ -173,8 +173,18 @@ public class EGFloatingTextField: UITextField {
     override public func drawRect(rect: CGRect){
         super.drawRect(rect)
         
-        let borderColor = self.hasError! ? kDefaultErrorColor : kDefaultInactiveColor
-        
+        var borderColor = self.hasError! ? kDefaultErrorColor : kDefaultInactiveColor
+        var sView: UIView? = superview
+        while sView != nil {
+            if let effectView = sView as? UIVisualEffectView{
+                if effectView.effect is UIVibrancyEffect {
+                    borderColor = UIColor.whiteColor()
+                }
+                break
+            }else{
+                sView = sView!.superview
+            }
+        }
         let textRect = self.textRectForBounds(rect)
         let context = UIGraphicsGetCurrentContext()
         let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
