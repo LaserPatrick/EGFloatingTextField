@@ -151,8 +151,6 @@ public class EGFloatingTextField: UITextField {
     
     override public func resignFirstResponder() -> Bool {
         
-        var flag:Bool = super.resignFirstResponder()
-        
         if self.floatingLabel! {
             
             if self.floating! && self.text!.isEmpty {
@@ -189,7 +187,7 @@ public class EGFloatingTextField: UITextField {
         let textRect = self.textRectForBounds(rect)
         let context = UIGraphicsGetCurrentContext()
         let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
-            CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
+                                       CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
         
         if  self.enabled  {
             
