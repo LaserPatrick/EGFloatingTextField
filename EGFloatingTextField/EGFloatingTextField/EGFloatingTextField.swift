@@ -88,7 +88,7 @@ public class EGFloatingTextField: UITextField {
             return isValid;
         })
         self.numberValidationBlock = ({(text:String,inout message: String) -> Bool in
-            let numRegex = "[0-9.+-]+";
+            let numRegex = "^[+-]?[0-9]+([,|.]+[0-9]+|)$"
             let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
             
             let isValid =  numTest.evaluateWithObject(text)
