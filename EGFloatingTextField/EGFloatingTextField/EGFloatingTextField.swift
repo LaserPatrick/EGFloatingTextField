@@ -9,9 +9,14 @@ import UIKit
 import Foundation
 import PureLayout
 
-public enum EGFloatingTextFieldValidationType {
+
+public enum EGFloatingTextFieldValidationType: String {
+    case Default
     case Email
-    case Number
+    case Integer
+    case Decimal
+    case PhoneNumber
+    case WebURL
 }
 
 @IBDesignable
@@ -20,20 +25,46 @@ public class EGFloatingTextField: UITextField {
     
     private typealias EGFloatingTextFieldValidationBlock = ((text:String,inout message:String)-> Bool)!
     
-    public var validationType : EGFloatingTextFieldValidationType!
-    
-    @IBInspectable var validator: String!{
+    public var validationType : EGFloatingTextFieldValidationType!{
         didSet{
-            switch validator{
-            case "@":
-                self.validationType = EGFloatingTextFieldValidationType.Email
-                break
-            case "0":
-                self.validationType = EGFloatingTextFieldValidationType.Number
-                break
+            if validationType != nil{
+            switch validationType! {
+            case .Email:
+                keyboardType = .EmailAddress
+                autocapitalizationType = .None
+                autocorrectionType = .No
+            case .Decimal:
+                keyboardType = .DecimalPad
+                autocapitalizationType = .None
+                autocorrectionType = .No
+            case .Integer:
+                keyboardType = .NumberPad
+                autocapitalizationType = .None
+                autocorrectionType = .No
+            case .PhoneNumber:
+                keyboardType = .PhonePad
+                autocapitalizationType = .None
+                autocorrectionType = .No
+            case .WebURL:
+                keyboardType = .URL
+                autocapitalizationType = .None
+                autocorrectionType = .No
             default:
+                keyboardType = .Default
+                autocapitalizationType = .Sentences
+                autocorrectionType = .Default
                 break
+                }
             }
+        }
+    }
+    
+    @IBInspectable var validationTypeAdapter: String {
+        get {
+            return validationType.rawValue
+        }
+        set(shapeIndex) {
+            self.validationType = EGFloatingTextFieldValidationType(rawValue: shapeIndex) ?? .Default
         }
     }
     
@@ -46,7 +77,10 @@ public class EGFloatingTextField: UITextField {
     }
     
     private var emailValidationBlock  : EGFloatingTextFieldValidationBlock
-    private var numberValidationBlock : EGFloatingTextFieldValidationBlock
+    private var integerValidationBlock : EGFloatingTextFieldValidationBlock
+    private var decimalValidationBlock : EGFloatingTextFieldValidationBlock
+    private var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock
+    private var urlValidationBlock : EGFloatingTextFieldValidationBlock
     
     let kDefaultInactiveColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54))
     let kDefaultActiveColor = UIColor.blueColor()
@@ -77,27 +111,50 @@ public class EGFloatingTextField: UITextField {
     func commonInit(){
         
         self.emailValidationBlock = ({(text:String, inout message: String) -> Bool in
-            let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}"
-            
+            let emailRegex = "([A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6})?"
             let emailTest = NSPredicate(format:"SELF MATCHES %@" , emailRegex)
-            
             let  isValid = emailTest.evaluateWithObject(text)
             if !isValid {
-                message = "Invalid Email Address"
+                message = "Invalid Email address"
             }
             return isValid;
         })
-        self.numberValidationBlock = ({(text:String,inout message: String) -> Bool in
-            let numRegex = "^[+-]?[0-9]+([,|.]+[0-9]+|)$"
+        self.integerValidationBlock = ({(text:String,inout message: String) -> Bool in
+            let numRegex = "^([+-]?[0-9]+)?$"
             let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
-            
             let isValid =  numTest.evaluateWithObject(text)
             if !isValid {
-                message = "Invalid Number"
+                message = "Invalid integer number"
             }
             return isValid;
-            
         })
+        self.decimalValidationBlock = ({(text:String,inout message: String) -> Bool in
+            let numRegex = "^([+-]?[0-9]+([,|.]+[0-9]+|))?$"
+            let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
+            let isValid =  numTest.evaluateWithObject(text)
+            if !isValid {
+                message = "Invalid decimal number"
+            }
+            return isValid;
+        })
+        self.phoneNumberValidationBlock = ({(text:String,inout message: String) -> Bool in
+            let numRegex = "^([+]?[0-9]+)?$"
+            let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
+            let isValid =  numTest.evaluateWithObject(text)
+            if !isValid {
+                message = "Invalid phone number"
+            }
+            return isValid;
+        })
+        self.urlValidationBlock = ({(text:String,inout message: String) -> Bool in
+            let regex = try! NSRegularExpression(pattern: "^(((http|https):\\/\\/)?((\\w)*|([0-9]*)|([-|_])*)+([\\/.|\\/]((\\w)*|([0-9]*)|([-|_])*))+)?$", options: [.CaseInsensitive])
+            let isValid = regex.firstMatchInString(text, options:[], range: NSMakeRange(0, (text as! NSString).length)) != nil
+            if !isValid {
+                message = "Invalid url"
+            }
+            return isValid;
+        })
+        
         self.floating = false
         self.hasError = false
         
@@ -109,7 +166,6 @@ public class EGFloatingTextField: UITextField {
         self.label.numberOfLines = 1
         self.label.layer.masksToBounds = false
         self.addSubview(self.label)
-        
         
         self.activeBorder = UIView(frame: CGRectZero)
         self.activeBorder.backgroundColor = kDefaultActiveColor
@@ -134,9 +190,7 @@ public class EGFloatingTextField: UITextField {
     }
     
     override public func becomeFirstResponder() -> Bool {
-        
         if self.floatingLabel! {
-            
             if !self.floating! || self.text!.isEmpty {
                 self.floatLabelToTop()
                 self.floating = true
@@ -150,7 +204,6 @@ public class EGFloatingTextField: UITextField {
     }
     
     override public func resignFirstResponder() -> Bool {
-        
         if self.floatingLabel! {
             
             if self.floating! && self.text!.isEmpty {
@@ -166,12 +219,10 @@ public class EGFloatingTextField: UITextField {
         self.showInactiveBorder()
         self.validate()
         return super.resignFirstResponder()
-        
     }
     
     override public func drawRect(rect: CGRect){
         super.drawRect(rect)
-        
         var borderColor = self.hasError! ? kDefaultErrorColor : kDefaultInactiveColor
         var sView: UIView? = superview
         while sView != nil {
@@ -188,17 +239,13 @@ public class EGFloatingTextField: UITextField {
         let context = UIGraphicsGetCurrentContext()
         let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
                                        CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
-        
         if  self.enabled  {
-            
             CGContextBeginPath(context);
             CGContextAddLines(context, borderlines, 2);
             CGContextSetLineWidth(context, 1.0);
             CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
             CGContextStrokePath(context);
-            
         } else {
-            
             CGContextBeginPath(context);
             CGContextAddLines(context, borderlines, 2);
             CGContextSetLineWidth(context, 1.0);
@@ -206,7 +253,6 @@ public class EGFloatingTextField: UITextField {
             CGContextSetLineDash(context, 0, dashPattern, 2);
             CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
             CGContextStrokePath(context);
-            
         }
     }
     
@@ -225,12 +271,10 @@ public class EGFloatingTextField: UITextField {
     }
     
     func floatLabelToTop() {
-        
         CATransaction.begin()
         CATransaction.setCompletionBlock { () -> Void in
             self.label.textColor = self.kDefaultActiveColor
         }
-        
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), CGFloat(1))
         var toTransform = CATransform3DMakeScale(CGFloat(0.5), CGFloat(0.5), CGFloat(1))
@@ -249,7 +293,6 @@ public class EGFloatingTextField: UITextField {
     }
     
     func showActiveBorder() {
-        
         self.activeBorder.layer.transform = CATransform3DMakeScale(CGFloat(0.01), CGFloat(1.0), 1)
         self.activeBorder.layer.opacity = 1
         CATransaction.begin()
@@ -325,25 +368,28 @@ public class EGFloatingTextField: UITextField {
     }
     
     func validate(){
-        
         if self.validationType != nil {
             var message : String = ""
-            
-            if self.validationType! == .Email {
-                
+            switch self.validationType!{
+            case .Email:
                 let isValid = self.emailValidationBlock(text: self.text!, message: &message)
-                
                 performValidation(isValid,message: message)
-                
-            } else {
-                let isValid = self.numberValidationBlock(text: self.text!, message: &message)
-                
+            case .Integer:
+                let isValid = self.integerValidationBlock(text: self.text!, message: &message)
                 performValidation(isValid,message: message)
+            case .Decimal:
+                let isValid = self.decimalValidationBlock(text: self.text!, message: &message)
+                performValidation(isValid,message: message)
+            case .PhoneNumber:
+                let isValid = self.phoneNumberValidationBlock(text: self.text!, message: &message)
+                performValidation(isValid,message: message)
+            case .WebURL:
+                let isValid = self.urlValidationBlock(text: self.text!, message: &message)
+                performValidation(isValid,message: message)
+            default:
+                break
             }
         }
     }
 }
 
-extension EGFloatingTextField {
-    
-}

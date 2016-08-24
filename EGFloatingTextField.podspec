@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name             = "EGFloatingTextField"
-  s.version          = "1.0.0"
+  s.version          = "2.0.0"
   s.summary          = "Implementation of Google's 'Floating labels' of Material design."
   s.homepage         = "https://github.com/enisgayretli/EGFloatingTextField"
   s.license          = 'MIT'
   s.author           = { "Enis Gayretli" => "enisgayretli@gmail.com" }
-  s.source           = { :git => "https://github.com/enisgayretli/EGFloatingTextField.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/LaserPatrick/EGFloatingTextField.git" }
   s.social_media_url = 'https://twitter.com/enisgayretli'
   s.platform     = :ios, '8.0'
   s.requires_arc = true
