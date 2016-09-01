@@ -182,7 +182,7 @@ public class EGFloatingTextField: UITextField {
         self.activeBorder.autoPinEdge(ALEdge.Right, toEdge: ALEdge.Right, ofView: self)
         self.activeBorder.autoSetDimension(ALDimension.Height, toSize: 2)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("textDidChange:"), name: "UITextFieldTextDidChangeNotification", object: self)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(UITextInputDelegate.textDidChange(_:)), name: "UITextFieldTextDidChangeNotification", object: self)
     }
     
     public func setPlaceHolder(placeholder:String){
