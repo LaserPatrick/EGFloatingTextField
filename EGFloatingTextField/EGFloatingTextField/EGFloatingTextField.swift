@@ -148,7 +148,7 @@ public class EGFloatingTextField: UITextField {
         })
         self.urlValidationBlock = ({(text:String,inout message: String) -> Bool in
             let regex = try! NSRegularExpression(pattern: "^(((http|https):\\/\\/)?((\\w)*|([0-9]*)|([-|_])*)+([\\/.|\\/]((\\w)*|([0-9]*)|([-|_])*))+)?$", options: [.CaseInsensitive])
-            let isValid = regex.firstMatchInString(text, options:[], range: NSMakeRange(0, (text as! NSString).length)) != nil
+            let isValid = regex.firstMatchInString(text, options:[], range: NSMakeRange(0, (text as NSString).length)) != nil
             if !isValid {
                 message = "Invalid url"
             }
@@ -236,23 +236,24 @@ public class EGFloatingTextField: UITextField {
             }
         }
         let textRect = self.textRectForBounds(rect)
-        let context = UIGraphicsGetCurrentContext()
-        let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
-                                       CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
-        if  self.enabled  {
-            CGContextBeginPath(context);
-            CGContextAddLines(context, borderlines, 2);
-            CGContextSetLineWidth(context, 1.0);
-            CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
-            CGContextStrokePath(context);
-        } else {
-            CGContextBeginPath(context);
-            CGContextAddLines(context, borderlines, 2);
-            CGContextSetLineWidth(context, 1.0);
-            let  dashPattern : [CGFloat]  = [2, 4]
-            CGContextSetLineDash(context, 0, dashPattern, 2);
-            CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
-            CGContextStrokePath(context);
+        if let context = UIGraphicsGetCurrentContext(){
+            let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
+                                           CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
+            if  self.enabled  {
+                CGContextBeginPath(context);
+                CGContextAddLines(context, borderlines, 2);
+                CGContextSetLineWidth(context, 1.0);
+                CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
+                CGContextStrokePath(context);
+            } else {
+                CGContextBeginPath(context);
+                CGContextAddLines(context, borderlines, 2);
+                CGContextSetLineWidth(context, 1.0);
+                let  dashPattern : [CGFloat]  = [2, 4]
+                CGContextSetLineDash(context, 0, dashPattern, 2);
+                CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
+                CGContextStrokePath(context);
+            }
         }
     }
     
