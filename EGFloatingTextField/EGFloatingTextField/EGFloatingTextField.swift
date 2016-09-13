@@ -261,10 +261,10 @@ public class EGFloatingTextField: UITextField {
         self.validate()
     }
     
-    public func setDefaultText(string: String){
+    public func setDefaultText(string: String?){
         text = string
-        floatLabelToTop()
-        floating = true
+        string != nil ? floatLabelToTop() : animateLabelBack()
+        floating = !(string == nil)
         showInactiveBorder()
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
             self.label.textColor = self.kDefaultInactiveColor
