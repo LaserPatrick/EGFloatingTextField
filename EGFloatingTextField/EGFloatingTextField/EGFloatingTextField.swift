@@ -21,38 +21,38 @@ public enum EGFloatingTextFieldValidationType: String {
 
 @IBDesignable
 
-public class EGFloatingTextField: UITextField {
+open class EGFloatingTextField: UITextField {
     
-    private typealias EGFloatingTextFieldValidationBlock = ((text:String,inout message:String)-> Bool)!
+    fileprivate typealias EGFloatingTextFieldValidationBlock = ((_ text:String,_ message:inout String)-> Bool)!
     
-    public var validationType : EGFloatingTextFieldValidationType!{
+    open var validationType : EGFloatingTextFieldValidationType!{
         didSet{
             if validationType != nil{
             switch validationType! {
             case .Email:
-                keyboardType = .EmailAddress
-                autocapitalizationType = .None
-                autocorrectionType = .No
+                keyboardType = .emailAddress
+                autocapitalizationType = .none
+                autocorrectionType = .no
             case .Decimal:
-                keyboardType = .DecimalPad
-                autocapitalizationType = .None
-                autocorrectionType = .No
+                keyboardType = .decimalPad
+                autocapitalizationType = .none
+                autocorrectionType = .no
             case .Integer:
-                keyboardType = .NumberPad
-                autocapitalizationType = .None
-                autocorrectionType = .No
+                keyboardType = .numberPad
+                autocapitalizationType = .none
+                autocorrectionType = .no
             case .PhoneNumber:
-                keyboardType = .PhonePad
-                autocapitalizationType = .None
-                autocorrectionType = .No
+                keyboardType = .phonePad
+                autocapitalizationType = .none
+                autocorrectionType = .no
             case .WebURL:
                 keyboardType = .URL
-                autocapitalizationType = .None
-                autocorrectionType = .No
+                autocapitalizationType = .none
+                autocorrectionType = .no
             default:
-                keyboardType = .Default
-                autocapitalizationType = .Sentences
-                autocorrectionType = .Default
+                keyboardType = .default
+                autocapitalizationType = .sentences
+                autocorrectionType = .default
                 break
                 }
             }
@@ -68,7 +68,7 @@ public class EGFloatingTextField: UITextField {
         }
     }
     
-    @IBInspectable public var IBPlaceholder: String?{
+    @IBInspectable open var IBPlaceholder: String?{
         didSet{
             if (IBPlaceholder != nil) {
                 setPlaceHolder(IBPlaceholder!)
@@ -76,19 +76,19 @@ public class EGFloatingTextField: UITextField {
         }
     }
     
-    private var emailValidationBlock  : EGFloatingTextFieldValidationBlock
-    private var integerValidationBlock : EGFloatingTextFieldValidationBlock
-    private var decimalValidationBlock : EGFloatingTextFieldValidationBlock
-    private var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock
-    private var urlValidationBlock : EGFloatingTextFieldValidationBlock
+    fileprivate var emailValidationBlock  : EGFloatingTextFieldValidationBlock
+    fileprivate var integerValidationBlock : EGFloatingTextFieldValidationBlock
+    fileprivate var decimalValidationBlock : EGFloatingTextFieldValidationBlock
+    fileprivate var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock
+    fileprivate var urlValidationBlock : EGFloatingTextFieldValidationBlock
     
     let kDefaultInactiveColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54))
-    let kDefaultActiveColor = UIColor.blueColor()
-    let kDefaultErrorColor = UIColor.redColor()
+    let kDefaultActiveColor = UIColor.blue
+    let kDefaultErrorColor = UIColor.red
     let kDefaultLineHeight = CGFloat(22)
     let kDefaultLabelTextColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54))
     
-    public var floatingLabel : Bool! = true
+    open var floatingLabel : Bool! = true
     var label : UILabel!
     var labelFont : UIFont!
     var labelTextColor : UIColor!
@@ -110,45 +110,45 @@ public class EGFloatingTextField: UITextField {
     
     func commonInit(){
         
-        self.emailValidationBlock = ({(text:String, inout message: String) -> Bool in
+        self.emailValidationBlock = ({(text:String, message: inout String) -> Bool in
             let emailRegex = "([A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6})?"
             let emailTest = NSPredicate(format:"SELF MATCHES %@" , emailRegex)
-            let  isValid = emailTest.evaluateWithObject(text)
+            let  isValid = emailTest.evaluate(with: text)
             if !isValid {
                 message = "Invalid Email address"
             }
             return isValid;
         })
-        self.integerValidationBlock = ({(text:String,inout message: String) -> Bool in
+        self.integerValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+-]?[0-9]+)?$"
             let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
-            let isValid =  numTest.evaluateWithObject(text)
+            let isValid =  numTest.evaluate(with: text)
             if !isValid {
                 message = "Invalid integer number"
             }
             return isValid;
         })
-        self.decimalValidationBlock = ({(text:String,inout message: String) -> Bool in
+        self.decimalValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+-]?[0-9]+([,|.]+[0-9]+|))?$"
             let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
-            let isValid =  numTest.evaluateWithObject(text)
+            let isValid =  numTest.evaluate(with: text)
             if !isValid {
                 message = "Invalid decimal number"
             }
             return isValid;
         })
-        self.phoneNumberValidationBlock = ({(text:String,inout message: String) -> Bool in
+        self.phoneNumberValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+]?[0-9]+)?$"
             let numTest = NSPredicate(format:"SELF MATCHES %@" , numRegex)
-            let isValid =  numTest.evaluateWithObject(text)
+            let isValid =  numTest.evaluate(with: text)
             if !isValid {
                 message = "Invalid phone number"
             }
             return isValid;
         })
-        self.urlValidationBlock = ({(text:String,inout message: String) -> Bool in
-            let regex = try! NSRegularExpression(pattern: "^(((http|https):\\/\\/)?((\\w)*|([0-9]*)|([-|_])*)+([\\/.|\\/]((\\w)*|([0-9]*)|([-|_])*))+)?$", options: [.CaseInsensitive])
-            let isValid = regex.firstMatchInString(text, options:[], range: NSMakeRange(0, (text as NSString).length)) != nil
+        self.urlValidationBlock = ({(text:String,message: inout String) -> Bool in
+            let regex = try! NSRegularExpression(pattern: "^(((http|https):\\/\\/)?((\\w)*|([0-9]*)|([-|_])*)+([\\/.|\\/]((\\w)*|([0-9]*)|([-|_])*))+)?$", options: [.caseInsensitive])
+            let isValid = regex.firstMatch(in: text, options:[], range: NSMakeRange(0, (text as NSString).length)) != nil
             if !isValid {
                 message = "Invalid url"
             }
@@ -159,37 +159,37 @@ public class EGFloatingTextField: UITextField {
         self.hasError = false
         
         self.labelTextColor = kDefaultLabelTextColor
-        self.label = UILabel(frame: CGRectZero)
+        self.label = UILabel(frame: CGRect.zero)
         self.label.font = self.labelFont
         self.label.textColor = self.labelTextColor
-        self.label.textAlignment = NSTextAlignment.Left
+        self.label.textAlignment = NSTextAlignment.left
         self.label.numberOfLines = 1
         self.label.layer.masksToBounds = false
         self.addSubview(self.label)
         
-        self.activeBorder = UIView(frame: CGRectZero)
+        self.activeBorder = UIView(frame: CGRect.zero)
         self.activeBorder.backgroundColor = kDefaultActiveColor
         self.activeBorder.layer.opacity = 0
         self.addSubview(self.activeBorder)
         
-        self.label.autoAlignAxis(ALAxis.Horizontal, toSameAxisOfView: self)
-        self.label.autoPinEdge(ALEdge.Left, toEdge: ALEdge.Left, ofView: self)
-        self.label.autoMatchDimension(ALDimension.Width, toDimension: ALDimension.Width, ofView: self)
-        self.label.autoMatchDimension(ALDimension.Height, toDimension: ALDimension.Height, ofView: self)
+        self.label.autoAlignAxis(ALAxis.horizontal, toSameAxisOf: self)
+        self.label.autoPinEdge(ALEdge.left, to: ALEdge.left, of: self)
+        self.label.autoMatch(ALDimension.width, to: ALDimension.width, of: self)
+        self.label.autoMatch(ALDimension.height, to: ALDimension.height, of: self)
         
-        self.activeBorder.autoPinEdge(ALEdge.Bottom, toEdge: ALEdge.Bottom, ofView: self)
-        self.activeBorder.autoPinEdge(ALEdge.Left, toEdge: ALEdge.Left, ofView: self)
-        self.activeBorder.autoPinEdge(ALEdge.Right, toEdge: ALEdge.Right, ofView: self)
-        self.activeBorder.autoSetDimension(ALDimension.Height, toSize: 2)
+        self.activeBorder.autoPinEdge(ALEdge.bottom, to: ALEdge.bottom, of: self)
+        self.activeBorder.autoPinEdge(ALEdge.left, to: ALEdge.left, of: self)
+        self.activeBorder.autoPinEdge(ALEdge.right, to: ALEdge.right, of: self)
+        self.activeBorder.autoSetDimension(ALDimension.height, toSize: 2)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(UITextInputDelegate.textDidChange(_:)), name: "UITextFieldTextDidChangeNotification", object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(UITextInputDelegate.textDidChange(_:)), name: NSNotification.Name(rawValue: "UITextFieldTextDidChangeNotification"), object: self)
     }
     
-    public func setPlaceHolder(placeholder:String){
+    open func setPlaceHolder(_ placeholder:String){
         self.label.text = placeholder
     }
     
-    override public func becomeFirstResponder() -> Bool {
+    override open func becomeFirstResponder() -> Bool {
         if self.floatingLabel! {
             if !self.floating! || self.text!.isEmpty {
                 self.floatLabelToTop()
@@ -203,7 +203,7 @@ public class EGFloatingTextField: UITextField {
         return super.becomeFirstResponder()
     }
     
-    override public func resignFirstResponder() -> Bool {
+    override open func resignFirstResponder() -> Bool {
         if self.floatingLabel! {
             
             if self.floating! && self.text!.isEmpty {
@@ -221,52 +221,52 @@ public class EGFloatingTextField: UITextField {
         return super.resignFirstResponder()
     }
     
-    override public func drawRect(rect: CGRect){
-        super.drawRect(rect)
+    override open func draw(_ rect: CGRect){
+        super.draw(rect)
         var borderColor = self.hasError! ? kDefaultErrorColor : kDefaultInactiveColor
         var sView: UIView? = superview
         while sView != nil {
             if let effectView = sView as? UIVisualEffectView{
                 if effectView.effect is UIVibrancyEffect {
-                    borderColor = UIColor.whiteColor()
+                    borderColor = UIColor.white
                 }
                 break
             }else{
                 sView = sView!.superview
             }
         }
-        let textRect = self.textRectForBounds(rect)
+        let textRect = self.textRect(forBounds: rect)
         if let context = UIGraphicsGetCurrentContext(){
-            let borderlines : [CGPoint] = [CGPointMake(0, CGRectGetHeight(textRect) - 1),
-                                           CGPointMake(CGRectGetWidth(textRect), CGRectGetHeight(textRect) - 1)]
-            if  self.enabled  {
-                CGContextBeginPath(context);
-                CGContextAddLines(context, borderlines, 2);
-                CGContextSetLineWidth(context, 1.0);
-                CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
-                CGContextStrokePath(context);
+            let borderlines : [CGPoint] = [CGPoint(x: 0, y: textRect.height - 1),
+                                           CGPoint(x: textRect.width, y: textRect.height - 1)]
+            if  self.isEnabled  {
+                context.beginPath();
+                context.addLines(between: borderlines)
+                context.setLineWidth(1.0);
+                context.setStrokeColor(borderColor.cgColor);
+                context.strokePath();
             } else {
-                CGContextBeginPath(context);
-                CGContextAddLines(context, borderlines, 2);
-                CGContextSetLineWidth(context, 1.0);
+                context.beginPath();
+                context.addLines(between: borderlines)
+                context.setLineWidth(1.0)
                 let  dashPattern : [CGFloat]  = [2, 4]
-                CGContextSetLineDash(context, 0, dashPattern, 2);
-                CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
-                CGContextStrokePath(context);
+                context.setLineDash(phase: 0, lengths: dashPattern)
+                context.setStrokeColor(borderColor.cgColor);
+                context.strokePath();
             }
         }
     }
     
-    func textDidChange(notif: NSNotification){
+    func textDidChange(_ notif: Notification){
         self.validate()
     }
     
-    public func setDefaultText(string: String?){
+    open func setDefaultText(_ string: String?){
         text = string
         string != nil ? floatLabelToTop() : animateLabelBack()
         floating = !(string == nil)
         showInactiveBorder()
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
             self.label.textColor = self.kDefaultInactiveColor
         }
     }
@@ -279,16 +279,16 @@ public class EGFloatingTextField: UITextField {
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), CGFloat(1))
         var toTransform = CATransform3DMakeScale(CGFloat(0.5), CGFloat(0.5), CGFloat(1))
-        toTransform = CATransform3DTranslate(toTransform, -CGRectGetWidth(self.label.frame)/2, -CGRectGetHeight(self.label.frame), 0)
-        anim2.fromValue = NSValue(CATransform3D: fromTransform)
-        anim2.toValue = NSValue(CATransform3D: toTransform)
+        toTransform = CATransform3DTranslate(toTransform, -self.label.frame.width/2, -self.label.frame.height, 0)
+        anim2.fromValue = NSValue(caTransform3D: fromTransform)
+        anim2.toValue = NSValue(caTransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
         animGroup.duration = 0.3
         animGroup.fillMode = kCAFillModeForwards;
-        animGroup.removedOnCompletion = false;
-        self.label.layer.addAnimation(animGroup, forKey: "_floatingLabel")
+        animGroup.isRemovedOnCompletion = false;
+        self.label.layer.add(animGroup, forKey: "_floatingLabel")
         self.clipsToBounds = false
         CATransaction.commit()
     }
@@ -301,12 +301,12 @@ public class EGFloatingTextField: UITextField {
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(CGFloat(0.01), CGFloat(1.0), 1)
         let toTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), 1)
-        anim2.fromValue = NSValue(CATransform3D: fromTransform)
-        anim2.toValue = NSValue(CATransform3D: toTransform)
+        anim2.fromValue = NSValue(caTransform3D: fromTransform)
+        anim2.toValue = NSValue(caTransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         anim2.fillMode = kCAFillModeForwards
-        anim2.removedOnCompletion = false
-        self.activeBorder.layer.addAnimation(anim2, forKey: "_activeBorder")
+        anim2.isRemovedOnCompletion = false
+        self.activeBorder.layer.add(anim2, forKey: "_activeBorder")
         CATransaction.commit()
     }
     
@@ -318,19 +318,19 @@ public class EGFloatingTextField: UITextField {
         
         let anim2 = CABasicAnimation(keyPath: "transform")
         var fromTransform = CATransform3DMakeScale(0.5, 0.5, 1)
-        fromTransform = CATransform3DTranslate(fromTransform, -CGRectGetWidth(self.label.frame)/2, -CGRectGetHeight(self.label.frame), 0);
+        fromTransform = CATransform3DTranslate(fromTransform, -self.label.frame.width/2, -self.label.frame.height, 0);
         let toTransform = CATransform3DMakeScale(1.0, 1.0, 1)
-        anim2.fromValue = NSValue(CATransform3D: fromTransform)
-        anim2.toValue = NSValue(CATransform3D: toTransform)
+        anim2.fromValue = NSValue(caTransform3D: fromTransform)
+        anim2.toValue = NSValue(caTransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
         animGroup.duration = 0.3
         animGroup.fillMode = kCAFillModeForwards;
-        animGroup.removedOnCompletion = false;
+        animGroup.isRemovedOnCompletion = false;
         
-        self.label.layer.addAnimation(animGroup, forKey: "_animateLabelBack")
+        self.label.layer.add(animGroup, forKey: "_animateLabelBack")
         CATransaction.commit()
     }
     
@@ -343,16 +343,16 @@ public class EGFloatingTextField: UITextField {
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(1.0, 1.0, 1)
         let toTransform = CATransform3DMakeScale(0.01, 1.0, 1)
-        anim2.fromValue = NSValue(CATransform3D: fromTransform)
-        anim2.toValue = NSValue(CATransform3D: toTransform)
+        anim2.fromValue = NSValue(caTransform3D: fromTransform)
+        anim2.toValue = NSValue(caTransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         anim2.fillMode = kCAFillModeForwards
-        anim2.removedOnCompletion = false
-        self.activeBorder.layer.addAnimation(anim2, forKey: "_activeBorder")
+        anim2.isRemovedOnCompletion = false
+        self.activeBorder.layer.add(anim2, forKey: "_activeBorder")
         CATransaction.commit()
     }
     
-    func performValidation(isValid:Bool,message:String){
+    func performValidation(_ isValid:Bool,message:String){
         if !isValid {
             self.hasError = true
             self.errorMessage = message
@@ -373,19 +373,19 @@ public class EGFloatingTextField: UITextField {
             var message : String = ""
             switch self.validationType!{
             case .Email:
-                let isValid = self.emailValidationBlock(text: self.text!, message: &message)
+                let isValid = self.emailValidationBlock(self.text!, &message)
                 performValidation(isValid,message: message)
             case .Integer:
-                let isValid = self.integerValidationBlock(text: self.text!, message: &message)
+                let isValid = self.integerValidationBlock(self.text!, &message)
                 performValidation(isValid,message: message)
             case .Decimal:
-                let isValid = self.decimalValidationBlock(text: self.text!, message: &message)
+                let isValid = self.decimalValidationBlock(self.text!, &message)
                 performValidation(isValid,message: message)
             case .PhoneNumber:
-                let isValid = self.phoneNumberValidationBlock(text: self.text!, message: &message)
+                let isValid = self.phoneNumberValidationBlock(self.text!, &message)
                 performValidation(isValid,message: message)
             case .WebURL:
-                let isValid = self.urlValidationBlock(text: self.text!, message: &message)
+                let isValid = self.urlValidationBlock( self.text!,  &message)
                 performValidation(isValid,message: message)
             default:
                 break

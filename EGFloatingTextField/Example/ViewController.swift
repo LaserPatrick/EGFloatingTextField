@@ -14,28 +14,28 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let emailLabel = EGFloatingTextField(frame: CGRectMake(8, 64, CGRectGetWidth(self.view.bounds) - 16, 48))
+        let emailLabel = EGFloatingTextField(frame: CGRect(x: 8, y: 64, width: (self.view.bounds).width - 16, height: 48))
         emailLabel.floatingLabel = true
         emailLabel.setPlaceHolder("Email")
         emailLabel.validationType = .Email
-        emailLabel.keyboardType = .EmailAddress
+        emailLabel.keyboardType = .emailAddress
         self.view.addSubview(emailLabel)
         
-        let passwordLabel = EGFloatingTextField(frame: CGRectMake(8, 128, CGRectGetWidth(self.view.bounds) - 16, 48))
+        let passwordLabel = EGFloatingTextField(frame: CGRect(x: 8, y: 128, width: (self.view.bounds).width - 16, height: 48))
         passwordLabel.floatingLabel = true
-        passwordLabel.secureTextEntry = true
+        passwordLabel.isSecureTextEntry = true
         passwordLabel.setPlaceHolder("Password")
         self.view.addSubview(passwordLabel)
         
-        emailLabel.autoPinEdge(ALEdge.Left, toEdge:ALEdge.Left, ofView:self.view, withOffset:8)
-        emailLabel.autoPinEdge(ALEdge.Right, toEdge:ALEdge.Right, ofView:self.view, withOffset:-8)
-        emailLabel.autoPinToTopLayoutGuideOfViewController(self, withInset:16)
-        emailLabel.autoSetDimension(ALDimension.Height, toSize:44)
+        emailLabel.autoPinEdge(ALEdge.left, to:ALEdge.left, of:self.view, withOffset:8)
+        emailLabel.autoPinEdge(ALEdge.right, to:ALEdge.right, of:self.view, withOffset:-8)
+        emailLabel.autoPin(toTopLayoutGuideOf: self, withInset:16)
+        emailLabel.autoSetDimension(ALDimension.height, toSize:44)
         
-        passwordLabel.autoPinEdge(ALEdge.Left, toEdge:ALEdge.Left, ofView:self.view, withOffset:8)
-        passwordLabel.autoPinEdge(ALEdge.Right, toEdge:ALEdge.Right, ofView:self.view, withOffset:-8)
-        passwordLabel.autoPinEdge(ALEdge.Top, toEdge:ALEdge.Bottom, ofView:emailLabel, withOffset:16)
-        passwordLabel.autoSetDimension(ALDimension.Height, toSize:44)
+        passwordLabel.autoPinEdge(ALEdge.left, to:ALEdge.left, of:self.view, withOffset:8)
+        passwordLabel.autoPinEdge(ALEdge.right, to:ALEdge.right, of:self.view, withOffset:-8)
+        passwordLabel.autoPinEdge(ALEdge.top, to:ALEdge.bottom, of:emailLabel, withOffset:16)
+        passwordLabel.autoSetDimension(ALDimension.height, toSize:44)
         // Do any additional setup after loading the view, typically from a nib.
     }
 
