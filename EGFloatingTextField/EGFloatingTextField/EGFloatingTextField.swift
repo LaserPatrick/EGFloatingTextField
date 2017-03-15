@@ -23,6 +23,20 @@ public enum EGFloatingTextFieldValidationType: String {
 
 open class EGFloatingTextField: UITextField {
     
+    open override var text: String?{
+        didSet{
+            if !isFirstResponder{
+                if !(text ?? "").isEmpty && (oldValue ?? "").isEmpty{
+                    floatLabelToTop(active: false, animated: false)
+                    floating = true
+                }else if (text ?? "").isEmpty && !(oldValue ?? "").isEmpty{
+                    animateLabelBack()
+                    floating = false
+                }
+            }
+        }
+    }
+    
     fileprivate typealias EGFloatingTextFieldValidationBlock = ((_ text:String,_ message:inout String)-> Bool)!
     
     open var validationType : EGFloatingTextFieldValidationType!{
@@ -117,7 +131,7 @@ open class EGFloatingTextField: UITextField {
             if !isValid {
                 message = "Invalid Email address"
             }
-            return isValid;
+            return isValid
         })
         self.integerValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+-]?[0-9]+)?$"
@@ -126,7 +140,7 @@ open class EGFloatingTextField: UITextField {
             if !isValid {
                 message = "Invalid integer number"
             }
-            return isValid;
+            return isValid
         })
         self.decimalValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+-]?[0-9]+([,|.]+[0-9]+|))?$"
@@ -135,7 +149,7 @@ open class EGFloatingTextField: UITextField {
             if !isValid {
                 message = "Invalid decimal number"
             }
-            return isValid;
+            return isValid
         })
         self.phoneNumberValidationBlock = ({(text:String,message: inout String) -> Bool in
             let numRegex = "^([+]?[0-9]+)?$"
@@ -144,7 +158,7 @@ open class EGFloatingTextField: UITextField {
             if !isValid {
                 message = "Invalid phone number"
             }
-            return isValid;
+            return isValid
         })
         self.urlValidationBlock = ({(text:String,message: inout String) -> Bool in
             let regex = try! NSRegularExpression(pattern: "^(((http|https):\\/\\/)?((\\w)*|([0-9]*)|([-|_])*)+([\\/.|\\/]((\\w)*|([0-9]*)|([-|_])*))+)?$", options: [.caseInsensitive])
@@ -152,7 +166,7 @@ open class EGFloatingTextField: UITextField {
             if !isValid {
                 message = "Invalid url"
             }
-            return isValid;
+            return isValid
         })
         
         self.floating = false
@@ -240,19 +254,19 @@ open class EGFloatingTextField: UITextField {
             let borderlines : [CGPoint] = [CGPoint(x: 0, y: textRect.height - 1),
                                            CGPoint(x: textRect.width, y: textRect.height - 1)]
             if  self.isEnabled  {
-                context.beginPath();
+                context.beginPath()
                 context.addLines(between: borderlines)
-                context.setLineWidth(1.0);
-                context.setStrokeColor(borderColor.cgColor);
-                context.strokePath();
+                context.setLineWidth(1.0)
+                context.setStrokeColor(borderColor.cgColor)
+                context.strokePath()
             } else {
-                context.beginPath();
+                context.beginPath()
                 context.addLines(between: borderlines)
                 context.setLineWidth(1.0)
                 let  dashPattern : [CGFloat]  = [2, 4]
                 context.setLineDash(phase: 0, lengths: dashPattern)
-                context.setStrokeColor(borderColor.cgColor);
-                context.strokePath();
+                context.setStrokeColor(borderColor.cgColor)
+                context.strokePath()
             }
         }
     }
@@ -261,33 +275,26 @@ open class EGFloatingTextField: UITextField {
         self.validate()
     }
     
-    open func setDefaultText(_ string: String?){
-        text = string
-        string != nil ? floatLabelToTop() : animateLabelBack()
-        floating = !(string == nil)
-        showInactiveBorder()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
-            self.label.textColor = self.kDefaultInactiveColor
-        }
-    }
-    
-    func floatLabelToTop() {
+    func floatLabelToTop(active: Bool = true, animated: Bool = true) {
+        label.layoutIfNeeded()
         CATransaction.begin()
-        CATransaction.setCompletionBlock { () -> Void in
-            self.label.textColor = self.kDefaultActiveColor
+        if active {
+            CATransaction.setCompletionBlock { () -> Void in
+                self.label.textColor = self.kDefaultActiveColor
+            }
         }
         let anim2 = CABasicAnimation(keyPath: "transform")
         let fromTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), CGFloat(1))
         var toTransform = CATransform3DMakeScale(CGFloat(0.5), CGFloat(0.5), CGFloat(1))
-        toTransform = CATransform3DTranslate(toTransform, -self.label.frame.width/2, -self.label.frame.height, 0)
+        toTransform = CATransform3DTranslate(toTransform, -label.frame.width/2, -label.frame.height, 0)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
         anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
-        animGroup.duration = 0.3
-        animGroup.fillMode = kCAFillModeForwards;
-        animGroup.isRemovedOnCompletion = false;
+        animGroup.duration = animated ? 0.3 : 0.0
+        animGroup.fillMode = kCAFillModeForwards
+        animGroup.isRemovedOnCompletion = false
         self.label.layer.add(animGroup, forKey: "_floatingLabel")
         self.clipsToBounds = false
         CATransaction.commit()
@@ -311,14 +318,14 @@ open class EGFloatingTextField: UITextField {
     }
     
     func animateLabelBack() {
+        label.layoutIfNeeded()
         CATransaction.begin()
         CATransaction.setCompletionBlock { () -> Void in
             self.label.textColor = self.kDefaultInactiveColor
         }
-        
         let anim2 = CABasicAnimation(keyPath: "transform")
         var fromTransform = CATransform3DMakeScale(0.5, 0.5, 1)
-        fromTransform = CATransform3DTranslate(fromTransform, -self.label.frame.width/2, -self.label.frame.height, 0);
+        fromTransform = CATransform3DTranslate(fromTransform, -self.label.frame.width/2, -self.label.frame.height, 0)
         let toTransform = CATransform3DMakeScale(1.0, 1.0, 1)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
@@ -327,8 +334,8 @@ open class EGFloatingTextField: UITextField {
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
         animGroup.duration = 0.3
-        animGroup.fillMode = kCAFillModeForwards;
-        animGroup.isRemovedOnCompletion = false;
+        animGroup.fillMode = kCAFillModeForwards
+        animGroup.isRemovedOnCompletion = false
         
         self.label.layer.add(animGroup, forKey: "_animateLabelBack")
         CATransaction.commit()
