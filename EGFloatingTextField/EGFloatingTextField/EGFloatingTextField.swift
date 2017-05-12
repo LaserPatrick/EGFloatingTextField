@@ -42,32 +42,32 @@ open class EGFloatingTextField: UITextField {
     open var validationType : EGFloatingTextFieldValidationType!{
         didSet{
             if validationType != nil{
-            switch validationType! {
-            case .Email:
-                keyboardType = .emailAddress
-                autocapitalizationType = .none
-                autocorrectionType = .no
-            case .Decimal:
-                keyboardType = .decimalPad
-                autocapitalizationType = .none
-                autocorrectionType = .no
-            case .Integer:
-                keyboardType = .numberPad
-                autocapitalizationType = .none
-                autocorrectionType = .no
-            case .PhoneNumber:
-                keyboardType = .phonePad
-                autocapitalizationType = .none
-                autocorrectionType = .no
-            case .WebURL:
-                keyboardType = .URL
-                autocapitalizationType = .none
-                autocorrectionType = .no
-            default:
-                keyboardType = .default
-                autocapitalizationType = .sentences
-                autocorrectionType = .default
-                break
+                switch validationType! {
+                case .Email:
+                    keyboardType = .emailAddress
+                    autocapitalizationType = .none
+                    autocorrectionType = .no
+                case .Decimal:
+                    keyboardType = .decimalPad
+                    autocapitalizationType = .none
+                    autocorrectionType = .no
+                case .Integer:
+                    keyboardType = .numberPad
+                    autocapitalizationType = .none
+                    autocorrectionType = .no
+                case .PhoneNumber:
+                    keyboardType = .phonePad
+                    autocapitalizationType = .none
+                    autocorrectionType = .no
+                case .WebURL:
+                    keyboardType = .URL
+                    autocapitalizationType = .none
+                    autocorrectionType = .no
+                default:
+                    keyboardType = .default
+                    autocapitalizationType = .sentences
+                    autocorrectionType = .default
+                    break
                 }
             }
         }
@@ -87,6 +87,12 @@ open class EGFloatingTextField: UITextField {
             if (IBPlaceholder != nil) {
                 setPlaceHolder(IBPlaceholder!)
             }
+        }
+    }
+    
+    @IBInspectable open var canBeEmpty: Bool = true{
+        didSet{
+            setPlaceHolder(label.text ?? "")
         }
     }
     
@@ -200,7 +206,7 @@ open class EGFloatingTextField: UITextField {
     }
     
     open func setPlaceHolder(_ placeholder:String){
-        self.label.text = placeholder
+        self.label.text = canBeEmpty ? placeholder : placeholder + " *"
     }
     
     override open func becomeFirstResponder() -> Bool {
@@ -376,26 +382,30 @@ open class EGFloatingTextField: UITextField {
     }
     
     func validate(){
-        if self.validationType != nil {
-            var message : String = ""
-            switch self.validationType!{
-            case .Email:
-                let isValid = self.emailValidationBlock(self.text!, &message)
-                performValidation(isValid,message: message)
-            case .Integer:
-                let isValid = self.integerValidationBlock(self.text!, &message)
-                performValidation(isValid,message: message)
-            case .Decimal:
-                let isValid = self.decimalValidationBlock(self.text!, &message)
-                performValidation(isValid,message: message)
-            case .PhoneNumber:
-                let isValid = self.phoneNumberValidationBlock(self.text!, &message)
-                performValidation(isValid,message: message)
-            case .WebURL:
-                let isValid = self.urlValidationBlock( self.text!,  &message)
-                performValidation(isValid,message: message)
-            default:
-                break
+        if !canBeEmpty, text?.isEmpty ?? true{
+            performValidation(false, message: "Required")
+        }else{
+            if self.validationType != nil {
+                var message : String = ""
+                switch self.validationType!{
+                case .Email:
+                    let isValid = self.emailValidationBlock(self.text!, &message)
+                    performValidation(isValid,message: message)
+                case .Integer:
+                    let isValid = self.integerValidationBlock(self.text!, &message)
+                    performValidation(isValid,message: message)
+                case .Decimal:
+                    let isValid = self.decimalValidationBlock(self.text!, &message)
+                    performValidation(isValid,message: message)
+                case .PhoneNumber:
+                    let isValid = self.phoneNumberValidationBlock(self.text!, &message)
+                    performValidation(isValid,message: message)
+                case .WebURL:
+                    let isValid = self.urlValidationBlock( self.text!,  &message)
+                    performValidation(isValid,message: message)
+                default:
+                    performValidation(true,message: message)
+                }
             }
         }
     }
