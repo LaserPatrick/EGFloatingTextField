@@ -11,5 +11,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.dependency 'PureLayout', '~>3.0'
   s.source_files = 'EGFloatingTextField/EGFloatingTextField/*.swift'
+  s.resource = 'EGFloatingTextField/EGFloatingTextField/**/*.{lproj}'
 end
 
