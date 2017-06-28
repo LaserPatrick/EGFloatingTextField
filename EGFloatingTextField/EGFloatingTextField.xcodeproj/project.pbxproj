@@ -65,6 +65,7 @@
 		B7CBFB391B769D1800CDE475 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B7CBFB3A1B769D1800CDE475 /* EGFloatingTextFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EGFloatingTextFieldTests.swift; sourceTree = "<group>"; };
 		B7CBFB441B769D8700CDE475 /* EGFloatingTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EGFloatingTextField.swift; sourceTree = "<group>"; };
+		CDB85F0A1F038A2E00E0B831 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/EGLocalizable.strings; sourceTree = "<group>"; };
 		CDD176691EFD604900009C4E /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		CDD1766A1EFD604900009C4E /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		CDD1766D1EFD62F000009C4E /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/EGLocalizable.strings; sourceTree = "<group>"; };
@@ -345,6 +346,7 @@
 				en,
 				Base,
 				it,
+				fr,
 			);
 			mainGroup = B7CBFB1E1B769D1700CDE475;
 			productRefGroup = B7CBFB291B769D1700CDE475 /* Products */;
@@ -505,6 +507,7 @@
 			children = (
 				CDD1766D1EFD62F000009C4E /* Base */,
 				CDD1766F1EFD62F400009C4E /* it */,
+				CDB85F0A1F038A2E00E0B831 /* fr */,
 			);
 			name = EGLocalizable.strings;
 			sourceTree = "<group>";
