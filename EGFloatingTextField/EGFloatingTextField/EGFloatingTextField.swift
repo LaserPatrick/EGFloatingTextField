@@ -83,18 +83,17 @@ open class EGFloatingTextField: UITextField {
             self.validationType = EGFloatingTextFieldValidationType(rawValue: shapeIndex) ?? .Default
         }
     }
-    
+    fileprivate var egPlaceholder: String?
     @IBInspectable open var IBPlaceholder: String?{
         didSet{
-            if (IBPlaceholder != nil) {
-                setPlaceHolder(IBPlaceholder!)
-            }
+            egPlaceholder = IBPlaceholder
+            refreshPlaceHolder()
         }
     }
     
     @IBInspectable open var canBeEmpty: Bool = true{
         didSet{
-            setPlaceHolder(label.text ?? "")
+            refreshPlaceHolder()
         }
     }
     
@@ -221,8 +220,8 @@ open class EGFloatingTextField: UITextField {
         NotificationCenter.default.addObserver(self, selector: #selector(UITextInputDelegate.textDidChange(_:)), name: NSNotification.Name(rawValue: "UITextFieldTextDidChangeNotification"), object: self)
     }
     
-    open func setPlaceHolder(_ placeholder:String){
-        self.label.text = canBeEmpty ? placeholder : placeholder + " *"
+    open func refreshPlaceHolder(){
+        self.label.text = canBeEmpty ? egPlaceholder : (egPlaceholder != nil ? egPlaceholder! + " *" : nil)
     }
     
     override open func becomeFirstResponder() -> Bool {
