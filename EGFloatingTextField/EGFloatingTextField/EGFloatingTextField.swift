@@ -103,17 +103,72 @@ open class EGFloatingTextField: UITextField {
     fileprivate var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock
     fileprivate var urlValidationBlock : EGFloatingTextFieldValidationBlock
     
-    let kDefaultInactiveColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54))
-    let kDefaultActiveColor = UIColor.blue
-    let kDefaultErrorColor = UIColor.red
+    public var defaultInactiveColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54)) {
+        willSet{
+            if defaultInactiveColor == self.label.textColor
+            {
+                self.label.textColor = newValue
+            }
+
+            if  self.activeBorder.backgroundColor == defaultInactiveColor
+            {
+                self.activeBorder.backgroundColor = newValue
+            }
+        }
+    }
+
+    public var defaultActiveColor = UIColor.blue {
+        willSet{
+            if defaultActiveColor == self.label.textColor
+            {
+                self.label.textColor = newValue
+            }
+
+            if  self.activeBorder.backgroundColor == defaultActiveColor
+            {
+                self.activeBorder.backgroundColor = newValue
+            }
+        }
+    }
+
+    public var defaultErrorColor = UIColor.red {
+        willSet{
+            if defaultErrorColor == self.label.textColor
+            {
+                self.label.textColor = newValue
+            }
+
+            if  self.activeBorder.backgroundColor == defaultErrorColor
+            {
+                self.activeBorder.backgroundColor = newValue
+            }
+        }
+        didSet{
+            errorLabel.textColor = defaultErrorColor
+        }
+    }
+
+    public var defaultLabelTextColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54)) {
+        willSet{
+            if defaultLabelTextColor == self.label.textColor
+            {
+                self.label.textColor = newValue
+            }
+        }
+    }
+
     let kDefaultLineHeight = CGFloat(22)
-    let kDefaultLabelTextColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54))
+
     
     open var floatingLabel : Bool! = true
     var label : UILabel!
     var errorLabel : UILabel!
-    var labelFont : UIFont!
-    var labelTextColor : UIColor!
+    public var labelFont : UIFont! {
+        didSet {
+            self.errorLabel.font = labelFont
+            self.label.font = labelFont
+        }
+    }
     var activeBorder : UIView!
     var floating : Bool!
     var active : Bool!
@@ -179,11 +234,10 @@ open class EGFloatingTextField: UITextField {
         
         self.floating = false
         self.hasError = false
-        
-        self.labelTextColor = kDefaultLabelTextColor
+
         self.label = UILabel(frame: CGRect.zero)
         self.label.font = self.labelFont
-        self.label.textColor = self.labelTextColor
+        self.label.textColor = defaultLabelTextColor
         self.label.textAlignment = NSTextAlignment.left
         self.label.numberOfLines = 1
         self.label.layer.masksToBounds = false
@@ -191,14 +245,14 @@ open class EGFloatingTextField: UITextField {
         
         self.errorLabel = UILabel(frame: CGRect.zero)
         self.errorLabel.font = self.labelFont
-        self.errorLabel.textColor = self.labelTextColor
+        self.errorLabel.textColor = defaultLabelTextColor
         self.errorLabel.textAlignment = NSTextAlignment.right
         self.errorLabel.numberOfLines = 1
         self.errorLabel.layer.masksToBounds = false
         self.addSubview(self.errorLabel)
         
         self.activeBorder = UIView(frame: CGRect.zero)
-        self.activeBorder.backgroundColor = kDefaultActiveColor
+        self.activeBorder.backgroundColor = defaultActiveColor
         self.activeBorder.layer.opacity = 0
         self.addSubview(self.activeBorder)
         
@@ -231,7 +285,7 @@ open class EGFloatingTextField: UITextField {
                 self.floating = true
             }
         } else {
-            self.label.textColor = kDefaultActiveColor
+            self.label.textColor = defaultActiveColor
             self.label.layer.opacity = 0
         }
         self.showActiveBorder()
@@ -250,7 +304,7 @@ open class EGFloatingTextField: UITextField {
                 self.label.layer.opacity = 1
             }
         }
-        self.label.textColor = kDefaultInactiveColor
+        self.label.textColor = defaultInactiveColor
         self.showInactiveBorder()
         self.validate()
         return super.resignFirstResponder()
@@ -258,7 +312,7 @@ open class EGFloatingTextField: UITextField {
     
     override open func draw(_ rect: CGRect){
         super.draw(rect)
-        var borderColor = self.hasError! ? kDefaultErrorColor : kDefaultInactiveColor
+        var borderColor = self.hasError! ? defaultErrorColor : defaultInactiveColor
         var sView: UIView? = superview
         while sView != nil {
             if let effectView = sView as? UIVisualEffectView{
@@ -301,7 +355,7 @@ open class EGFloatingTextField: UITextField {
         CATransaction.begin()
         if active {
             CATransaction.setCompletionBlock { () -> Void in
-                self.label.textColor = self.kDefaultActiveColor
+                self.label.textColor = self.defaultActiveColor
             }
         }
         let anim2 = CABasicAnimation(keyPath: "transform")
@@ -325,7 +379,7 @@ open class EGFloatingTextField: UITextField {
         if errorLabel.layer.animation(forKey: "_floatingLabel") == nil {
             errorLabel.layoutIfNeeded()
             CATransaction.begin()
-            errorLabel.textColor = kDefaultErrorColor
+            errorLabel.textColor = defaultErrorColor
             let anim2 = CABasicAnimation(keyPath: "transform")
             let fromTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), CGFloat(1))
             var toTransform = CATransform3DMakeScale(CGFloat(0.5), CGFloat(0.5), CGFloat(1))
@@ -371,7 +425,7 @@ open class EGFloatingTextField: UITextField {
         label.layoutIfNeeded()
         CATransaction.begin()
         CATransaction.setCompletionBlock { () -> Void in
-            self.label.textColor = self.kDefaultInactiveColor
+            self.label.textColor = self.defaultInactiveColor
         }
         let anim2 = CABasicAnimation(keyPath: "transform")
         var fromTransform = CATransform3DMakeScale(0.5, 0.5, 1)
@@ -412,15 +466,13 @@ open class EGFloatingTextField: UITextField {
     func performValidation(){
         if hasError {
             floatErrorLabelToTop()
-            self.labelTextColor = kDefaultErrorColor
-            self.activeBorder.backgroundColor = kDefaultErrorColor
+            self.activeBorder.backgroundColor = defaultErrorColor
             errorLabel.text = errorMessage
             errorLabel.isHidden = false
             self.setNeedsDisplay()
         } else {
             removeAnimationForErrorLabel()
-            self.labelTextColor = kDefaultActiveColor
-            self.activeBorder.backgroundColor = kDefaultActiveColor
+            self.activeBorder.backgroundColor = defaultActiveColor
             errorLabel.text = nil
             errorLabel.isHidden = true
             self.setNeedsDisplay()
