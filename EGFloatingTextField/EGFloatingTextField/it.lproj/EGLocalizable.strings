@@ -1,0 +1,14 @@
+/* 
+  Localizable.strings
+  EGFloatingTextField
+
+  Created by Patrick on 23/06/17.
+
+*/
+
+"Invalid_Email_Address" = "Indirizzo E-Mail non valido";
+"Invalid_integer_number" = "Numero intero non valido";
+"Invalid_decimal_number" = "Numero decimale non valido";
+"Invalid_phone_number" = "Numero di telefono non valido";
+"Invalid_URL" = "URL non valido";
+"Required" = "Obbligatorio";
