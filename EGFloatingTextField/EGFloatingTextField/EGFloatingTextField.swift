@@ -9,6 +9,13 @@ import UIKit
 import Foundation
 import PureLayout
 
+#if swift(>=4.2)
+fileprivate let mediaTimingFunctionEaseOut = CAMediaTimingFunctionName.easeOut
+fileprivate let fillModeForwards = CAMediaTimingFillMode.forwards
+#else
+fileprivate let mediaTimingFunctionEaseOut = kCAMediaTimingFunctionEaseOut
+fileprivate let fillModeForwards = kCAFillModeForwards
+#endif
 
 public enum EGFloatingTextFieldValidationType: String {
     case Default
@@ -39,7 +46,7 @@ open class EGFloatingTextField: UITextField {
         }
     }
     
-    fileprivate typealias EGFloatingTextFieldValidationBlock = ((_ text:String,_ message:inout String)-> Bool)!
+    fileprivate typealias EGFloatingTextFieldValidationBlock = (_ text:String,_ message:inout String)-> Bool
     
     open var validationType : EGFloatingTextFieldValidationType!{
         didSet{
@@ -97,11 +104,11 @@ open class EGFloatingTextField: UITextField {
         }
     }
     
-    fileprivate var emailValidationBlock  : EGFloatingTextFieldValidationBlock
-    fileprivate var integerValidationBlock : EGFloatingTextFieldValidationBlock
-    fileprivate var decimalValidationBlock : EGFloatingTextFieldValidationBlock
-    fileprivate var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock
-    fileprivate var urlValidationBlock : EGFloatingTextFieldValidationBlock
+    fileprivate var emailValidationBlock  : EGFloatingTextFieldValidationBlock!
+    fileprivate var integerValidationBlock : EGFloatingTextFieldValidationBlock!
+    fileprivate var decimalValidationBlock : EGFloatingTextFieldValidationBlock!
+    fileprivate var phoneNumberValidationBlock : EGFloatingTextFieldValidationBlock!
+    fileprivate var urlValidationBlock : EGFloatingTextFieldValidationBlock!
     
     public var defaultInactiveColor = UIColor(white: CGFloat(0), alpha: CGFloat(0.54)) {
         willSet{
@@ -364,11 +371,11 @@ open class EGFloatingTextField: UITextField {
         toTransform = CATransform3DTranslate(toTransform, -label.frame.width/2, -label.frame.height, 0)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
-        anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        anim2.timingFunction = CAMediaTimingFunction(name: mediaTimingFunctionEaseOut)
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
         animGroup.duration = animated ? 0.3 : 0.0
-        animGroup.fillMode = kCAFillModeForwards
+        animGroup.fillMode = fillModeForwards
         animGroup.isRemovedOnCompletion = false
         self.label.layer.add(animGroup, forKey: "_floatingLabel")
         self.clipsToBounds = false
@@ -386,11 +393,11 @@ open class EGFloatingTextField: UITextField {
             toTransform = CATransform3DTranslate(toTransform, errorLabel.frame.width/2, -errorLabel.frame.height, 0)
             anim2.fromValue = NSValue(caTransform3D: fromTransform)
             anim2.toValue = NSValue(caTransform3D: toTransform)
-            anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+            anim2.timingFunction = CAMediaTimingFunction(name: mediaTimingFunctionEaseOut)
             let animGroup = CAAnimationGroup()
             animGroup.animations = [anim2]
             animGroup.duration = 0.3
-            animGroup.fillMode = kCAFillModeForwards
+            animGroup.fillMode = fillModeForwards
             animGroup.isRemovedOnCompletion = false
             errorLabel.layer.add(animGroup, forKey: "_floatingLabel")
             clipsToBounds = false
@@ -414,8 +421,8 @@ open class EGFloatingTextField: UITextField {
         let toTransform = CATransform3DMakeScale(CGFloat(1.0), CGFloat(1.0), 1)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
-        anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        anim2.fillMode = kCAFillModeForwards
+        anim2.timingFunction = CAMediaTimingFunction(name: mediaTimingFunctionEaseOut)
+        anim2.fillMode = fillModeForwards
         anim2.isRemovedOnCompletion = false
         self.activeBorder.layer.add(anim2, forKey: "_activeBorder")
         CATransaction.commit()
@@ -433,12 +440,12 @@ open class EGFloatingTextField: UITextField {
         let toTransform = CATransform3DMakeScale(1.0, 1.0, 1)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
-        anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        anim2.timingFunction = CAMediaTimingFunction(name: mediaTimingFunctionEaseOut)
         
         let animGroup = CAAnimationGroup()
         animGroup.animations = [anim2]
         animGroup.duration = 0.3
-        animGroup.fillMode = kCAFillModeForwards
+        animGroup.fillMode = fillModeForwards
         animGroup.isRemovedOnCompletion = false
         
         self.label.layer.add(animGroup, forKey: "_animateLabelBack")
@@ -456,8 +463,8 @@ open class EGFloatingTextField: UITextField {
         let toTransform = CATransform3DMakeScale(0.01, 1.0, 1)
         anim2.fromValue = NSValue(caTransform3D: fromTransform)
         anim2.toValue = NSValue(caTransform3D: toTransform)
-        anim2.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        anim2.fillMode = kCAFillModeForwards
+        anim2.timingFunction = CAMediaTimingFunction(name: mediaTimingFunctionEaseOut)
+        anim2.fillMode = fillModeForwards
         anim2.isRemovedOnCompletion = false
         self.activeBorder.layer.add(anim2, forKey: "_activeBorder")
         CATransaction.commit()
